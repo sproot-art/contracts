@@ -1,0 +1,42 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+test = "test"
+
+# Pinned for reproducible bytecode across chains — explorer verification on
+# every chain in ChainRegistry.md depends on this being stable.
+solc = "0.8.28"
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "none"
+cbor_metadata = false
+
+# `paris`, deliberately. Contracts.md §6 requires the same source to deploy
+# unchanged on every registry chain. Paris avoids PUSH0 (shanghai) and
+# transient storage (cancun), which newer or non-mainline EVM chains may not
+# implement. Robinhood Chain is Arbitrum Orbit and handles more than this, but
+# the constraint is about the chains we have not added yet.
+evm_version = "paris"
+
+fs_permissions = [{ access = "read", path = "./out" }]
+
+[lint]
+# `tokenURI` is ERC-721's own casing, and `erc721Implementation` is the name
+# Contracts.md §3 fixes for the factory's public API. Renaming to satisfy a
+# style lint would diverge the code from the spec, which is the wrong trade.
+exclude_lints = ["mixed-case-variable", "mixed-case-function", "screaming-snake-case-immutable"]
+
+[fuzz]
+runs = 512
+
+[invariant]
+runs = 128
+depth = 64
+fail_on_revert = false
+
+[fmt]
+line_length = 110
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
